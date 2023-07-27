@@ -37,17 +37,19 @@ void clearCurrentAddressesInFile();
 void saveChangesInFile(vector <AddressBook> &addresses, int numberOfAddresses);
 bool isIndexExists(vector <AddressBook> &addresses, int index);
 void confirmAddedData();
+void selectOptionFromLogMenu(vector <Users> &users);
 
 int main()
 {
     vector <AddressBook> addresses;
-    vector <Users> user;
+    vector <Users> users;
     addresses = readAddressesToVector(addresses);
     int numberOfAddresses = addresses.size();
 
     while (true)
     {
        printLogMenu();
+       selectOptionFromLogMenu(users);
     }
 
     while (true)
@@ -515,4 +517,20 @@ bool isIndexExists(vector <AddressBook> &addresses, int index)
 void confirmAddedData()
 {
     cout << "Poprawnie wprowadzone dane" << endl;
+}
+
+void selectOptionFromLogMenu(vector <Users> &users)
+{
+    char logMenuChoice;
+    cin >> logMenuChoice;
+
+    switch (logMenuChoice)
+    {
+    case '1' :
+        break;
+    case '2' :
+        break;
+    case '3' :
+        exit(0);
+    }
 }
