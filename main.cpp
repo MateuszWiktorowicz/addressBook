@@ -10,7 +10,7 @@ struct AddressBook
     string name, surname, fullAddress, phoneNumber, email;
 };
 void printMainMenu();
-
+void printLogMenu();
 void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses);
 void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int& numberOfAddresses);
 string readLine();
@@ -39,7 +39,7 @@ int main()
     addresses = readAddressesToVector(addresses);
     int numberOfAddresses = addresses.size();
 
-
+    printLogMenu();
     while (true)
     {
         printMainMenu();
@@ -61,6 +61,14 @@ void printMainMenu()
     cout << "9. Wyjdz" << endl;
 }
 
+void printLogMenu()
+{
+   system("cls");
+    cout << "MENU" << endl;
+    cout << "1. Zaloguj sie" << endl;
+    cout << "2. Zarejestruj sie" << endl;
+    cout << "3. Zamknij Program" << endl;
+}
 
 void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses)
 {
