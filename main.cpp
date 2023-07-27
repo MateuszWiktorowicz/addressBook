@@ -9,6 +9,11 @@ struct AddressBook
     int userId;
     string name, surname, fullAddress, phoneNumber, email;
 };
+struct Users
+{
+    int id;
+    string login, password;
+};
 void printMainMenu();
 void printLogMenu();
 void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses);
@@ -36,10 +41,15 @@ void confirmAddedData();
 int main()
 {
     vector <AddressBook> addresses;
+    vector <Users> user;
     addresses = readAddressesToVector(addresses);
     int numberOfAddresses = addresses.size();
 
-    printLogMenu();
+    while (true)
+    {
+       printLogMenu();
+    }
+
     while (true)
     {
         printMainMenu();
