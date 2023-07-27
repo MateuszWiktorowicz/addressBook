@@ -37,9 +37,10 @@ void clearCurrentAddressesInFile();
 void saveChangesInFile(vector <AddressBook> &addresses, int numberOfAddresses);
 bool isIndexExists(vector <AddressBook> &addresses, int index);
 void confirmAddedData();
-void selectOptionFromLogMenu(vector <Users> &users);
+void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addresses, int numberOfAddresses);
 void registerNewUser(vector <Users> &users);
-bool isLoginFree(vector <Users> users, string userLogin);
+bool isLoginFree(vector <Users> &users, string userLogin);
+bool login(vector <Users> &users);
 
 int main()
 {
@@ -50,16 +51,9 @@ int main()
 
     while (true)
     {
-       printLogMenu();
-       selectOptionFromLogMenu(users);
+        printLogMenu();
+        selectOptionFromLogMenu(users, addresses, numberOfAddresses);
     }
-
-    while (true)
-    {
-        printMainMenu();
-        selectOptionFromMainMenu(addresses, numberOfAddresses);
-    }
-
     return 0;
 }
 
@@ -77,7 +71,7 @@ void printMainMenu()
 
 void printLogMenu()
 {
-   system("cls");
+    system("cls");
     cout << "MENU" << endl;
     cout << "1. Zaloguj sie" << endl;
     cout << "2. Zarejestruj sie" << endl;
@@ -521,7 +515,7 @@ void confirmAddedData()
     cout << "Poprawnie wprowadzone dane" << endl;
 }
 
-void selectOptionFromLogMenu(vector <Users> &users)
+void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addresses, int numberOfAddresses)
 {
     char logMenuChoice;
     cin >> logMenuChoice;
@@ -529,6 +523,18 @@ void selectOptionFromLogMenu(vector <Users> &users)
     switch (logMenuChoice)
     {
     case '1' :
+        if (login(users))
+        {
+            while (true)
+            {
+                printMainMenu();
+                selectOptionFromMainMenu(addresses, numberOfAddresses);
+            }
+        }
+        else
+        {
+            cout << "Bledne haslo lub login" << endl;
+        }
         break;
     case '2' :
         registerNewUser(users);
@@ -567,7 +573,7 @@ void registerNewUser(vector <Users> &users)
     users.push_back(user);
 }
 
-bool isLoginFree(vector <Users> users, string userLogin)
+bool isLoginFree(vector <Users> &users, string userLogin)
 {
     bool availableLogin = true;
     for (auto user : users)
@@ -578,4 +584,24 @@ bool isLoginFree(vector <Users> users, string userLogin)
         }
     }
     return availableLogin;
+}
+
+bool login(vector <Users> &users)
+{
+    bool loginPassed = false;
+    string login, password;
+
+    cout << "Podaj login" << endl
+         cin >> login;
+    cout << "Podaj haslo" << endl
+         cin >> password;
+
+    for (auto user : users)
+    {
+        if ((user.login == login) && (user.password = password))
+        {
+            loginPassed = true;
+        }
+    }
+    return loginPassed;
 }
