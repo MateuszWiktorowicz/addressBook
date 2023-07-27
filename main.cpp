@@ -38,6 +38,8 @@ void saveChangesInFile(vector <AddressBook> &addresses, int numberOfAddresses);
 bool isIndexExists(vector <AddressBook> &addresses, int index);
 void confirmAddedData();
 void selectOptionFromLogMenu(vector <Users> &users);
+void registerNewUser(vector <Users> &users);
+bool isLoginFree(vector <Users> users, string userLogin);
 
 int main()
 {
@@ -529,8 +531,51 @@ void selectOptionFromLogMenu(vector <Users> &users)
     case '1' :
         break;
     case '2' :
+        registerNewUser(users);
         break;
     case '3' :
         exit(0);
     }
+}
+
+void registerNewUser(vector <Users> &users)
+{
+    system("cls");
+    string userLogin;
+    Users user;
+
+    user.id = users.size() + 1;
+
+    cout << "Podaj login" << endl;
+    while (true)
+    {
+        cin >> userLogin;
+        if (isLoginFree(users, userLogin))
+        {
+            user.login = userLogin;
+            break;
+        }
+        else
+        {
+            cout << "Login zajety. Podaj nowy login" << endl;
+        }
+    }
+
+    cout << "Podaj haslo" << endl;
+    user.password = readLine();
+
+    users.push_back(user);
+}
+
+bool isLoginFree(vector <Users> users, string userLogin)
+{
+    bool availableLogin = true;
+    for (auto user : users)
+    {
+        if (user.login == userLogin)
+        {
+            availableLogin = false;
+        }
+    }
+    return availableLogin;
 }
