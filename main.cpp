@@ -41,6 +41,8 @@ void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addres
 void registerNewUser(vector <Users> &users);
 bool isLoginFree(vector <Users> &users, string userLogin);
 bool login(vector <Users> &users);
+void saveRegisteredUserInFile(const Users &user);
+void pasteUserDataInFile(ofstream &file, const Users &user);
 
 int main()
 {
@@ -534,6 +536,7 @@ void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addres
         else
         {
             cout << "Bledne haslo lub login" << endl;
+            Sleep(1000);
         }
         break;
     case '2' :
@@ -571,6 +574,7 @@ void registerNewUser(vector <Users> &users)
     user.password = readLine();
 
     users.push_back(user);
+    saveRegisteredUserInFile(user);
 }
 
 bool isLoginFree(vector <Users> &users, string userLogin)
@@ -591,17 +595,29 @@ bool login(vector <Users> &users)
     bool loginPassed = false;
     string login, password;
 
-    cout << "Podaj login" << endl
+    cout << "Podaj login" << endl;
          cin >> login;
-    cout << "Podaj haslo" << endl
+    cout << "Podaj haslo" << endl;
          cin >> password;
 
     for (auto user : users)
     {
-        if ((user.login == login) && (user.password = password))
+        if ((user.login == login) && (user.password == password))
         {
             loginPassed = true;
         }
     }
     return loginPassed;
+}
+
+void saveRegisteredUserInFile(const Users &user)
+{
+    ofstream file("users.txt", ios::app);
+    pasteUserDataInFile(file, user);
+    file.close()
+;}
+
+void pasteUserDataInFile(ofstream &file, const Users &user)
+{
+    file << user.id << "|" << user.login << "|" << user.password << endl;
 }
