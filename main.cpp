@@ -43,11 +43,13 @@ bool isLoginFree(vector <Users> &users, string userLogin);
 bool login(vector <Users> &users);
 void saveRegisteredUserInFile(const Users &user);
 void pasteUserDataInFile(ofstream &file, const Users &user);
+void readUsersInVector(vector <Users> &users);
 
 int main()
 {
     vector <AddressBook> addresses;
     vector <Users> users;
+    readUsersInVector(users);
     addresses = readAddressesToVector(addresses);
     int numberOfAddresses = addresses.size();
 
@@ -620,4 +622,30 @@ void saveRegisteredUserInFile(const Users &user)
 void pasteUserDataInFile(ofstream &file, const Users &user)
 {
     file << user.id << "|" << user.login << "|" << user.password << endl;
+}
+
+void readUsersInVector(vector <Users> &users)
+{
+    Users user;
+    string line;
+    ifstream file("users.txt", ios::in | ios::app);
+    while (getline(file, line))
+    {
+        stringstream ss(line);
+        string field;
+
+        getline (ss, field, '|');
+        user.id = stoi(field);
+
+        getline (ss, field, '|');
+        user.login = field;
+
+        getline (ss, field, '|');
+        user.password = field;
+
+        users.push_back(user);
+    }
+
+    file.close();
+
 }
