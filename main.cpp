@@ -6,7 +6,7 @@
 using namespace std;
 struct AddressBook
 {
-    int userId;
+    int userId, loggedInUsersId;
     string name, surname, fullAddress, phoneNumber, email;
 };
 struct Users
@@ -16,10 +16,10 @@ struct Users
 };
 void printMainMenu();
 void printLogMenu();
-void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses);
-void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int& numberOfAddresses);
+void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUserId);
+void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUsersId);
 string readLine();
-void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, int addressBookIndex);
+void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, int addressBookIndex, int loggedInUserId);
 void printAllAdressesInBook(vector <AddressBook> &addresses, int numberOfAddresses);
 void printRequiredAddress(const AddressBook &address);
 void lookFor(vector <AddressBook> &addresses, int numOfAddresses);
@@ -82,7 +82,7 @@ void printLogMenu()
     cout << "3. Zamknij Program" << endl;
 }
 
-void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses)
+void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUserId)
 {
     char menuChar;
     cin >> menuChar;
@@ -91,7 +91,7 @@ void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddr
     {
     case '1' :
     {
-        addNewAddressDataIntoBook(addresses, numberOfAddresses);
+        addNewAddressDataIntoBook(addresses, numberOfAddresses, loggedInUserId);
         numberOfAddresses++;
         break;
     }
@@ -126,14 +126,14 @@ void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddr
     }
 }
 
-void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int& numberOfAddresses)
+void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUserId)
 {
     system("cls");
-    inputAddressIntoRequiredAddresBookIndex(addresses, numberOfAddresses);
+    inputAddressIntoRequiredAddresBookIndex(addresses, numberOfAddresses, loggedInUserId);
     saveAddedAddressInFile(addresses, numberOfAddresses);
     confirmAddedData();
 }
-void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, int addressBookIndex)
+void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, int addressBookIndex, int loggedInUsersId)
 {
 
     AddressBook address;
@@ -147,6 +147,7 @@ void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, in
         address.userId = addresses[lastIndex].userId + 1;
 
     }
+    address.loggedInUsersId = loggedInUsersId;
     cout << "Wprowadz imie" << endl;
     address.name = readLine();
     cout << "Wprowadz nazwisko" << endl;
@@ -387,8 +388,8 @@ void saveAddedAddressInFile(vector <AddressBook> addresses, int addressIndex)
     fstream fileAddresses;
     fileAddresses.open("addresses.txt", ios::out | ios::app);
 
-    fileAddresses << addresses[addressIndex].userId << "|" << addresses[addressIndex].name << "|" << addresses[addressIndex].surname << "|" << addresses[addressIndex].fullAddress << "|" << addresses[addressIndex].phoneNumber << "|" << addresses[addressIndex].email << endl;
-
+    fileAddresses << addresses[addressIndex].userId << "|" << addresses[addressIndex].loggedInUsersId << "|" << addresses[addressIndex].name << "|";
+    fileAddresses << addresses[addressIndex].surname << "|" << addresses[addressIndex].fullAddress << "|" << addresses[addressIndex].phoneNumber << "|" << addresses[addressIndex].email << endl;
 }
 
 vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses)
@@ -532,12 +533,10 @@ void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addres
         loggedInUsersId = login(users);
         if (loggedInUsersId != -1)
         {
-            cout << loggedInUsersId;
-            system("pause");
             while (true)
             {
                 printMainMenu();
-                selectOptionFromMainMenu(addresses, numberOfAddresses);
+                selectOptionFromMainMenu(addresses, numberOfAddresses, loggedInUsersId);
             }
         }
         else
