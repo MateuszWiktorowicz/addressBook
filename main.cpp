@@ -30,14 +30,14 @@ int selectAddressPositionToEdit(vector <AddressBook> &addresses, int numOfAddres
 void printEditMenu();
 void executeAddressEdit(vector <AddressBook> &addresses, int addressArrayIndexToEdit);
 void saveAddedAddressInFile(vector <AddressBook> addresses, int addressIndex);
-vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses);
+vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses, int loggedInUsersId);
 void selectAddressToDelete(vector <AddressBook> &addresses, int &numberOfAddresses);
 void deleteAddress(vector <AddressBook> &addresses, int indexToDelete);
 void clearCurrentAddressesInFile();
 void saveChangesInFile(vector <AddressBook> &addresses, int numberOfAddresses);
 bool isIndexExists(vector <AddressBook> &addresses, int index);
 void confirmAddedData();
-void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addresses, int numberOfAddresses);
+void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addresses);
 void registerNewUser(vector <Users> &users);
 bool isLoginFree(vector <Users> &users, string userLogin);
 int login(vector <Users> &users);
@@ -50,13 +50,11 @@ int main()
     vector <AddressBook> addresses;
     vector <Users> users;
     readUsersInVector(users);
-    addresses = readAddressesToVector(addresses);
-    int numberOfAddresses = addresses.size();
 
     while (true)
     {
         printLogMenu();
-        selectOptionFromLogMenu(users, addresses, numberOfAddresses);
+        selectOptionFromLogMenu(users, addresses);
     }
     return 0;
 }
@@ -121,6 +119,7 @@ void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddr
     case '9' :
     {
         loggedInUsersId = -1;
+        addresses.clear();
         break;
     }
     }
@@ -392,7 +391,7 @@ void saveAddedAddressInFile(vector <AddressBook> addresses, int addressIndex)
     fileAddresses << addresses[addressIndex].surname << "|" << addresses[addressIndex].fullAddress << "|" << addresses[addressIndex].phoneNumber << "|" << addresses[addressIndex].email << endl;
 }
 
-vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses)
+vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses, int loggedInUsersId)
 {
     fstream fileAddresses;
     string line;
@@ -413,6 +412,9 @@ vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses)
         address.userId = stoi(field);
 
         getline(ss, field, '|');
+        address.loggedInUsersId = stoi(field);
+
+        getline(ss, field, '|');
         address.name = field;
 
         getline(ss, field, '|');
@@ -427,7 +429,11 @@ vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses)
         getline(ss, field, '|');
         address.email = field;
 
-        addresses.push_back(address);
+        if (address.loggedInUsersId == loggedInUsersId)
+        {
+            addresses.push_back(address);
+        }
+
 
     }
     return addresses;
@@ -520,7 +526,7 @@ void confirmAddedData()
     cout << "Poprawnie wprowadzone dane" << endl;
 }
 
-void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addresses, int numberOfAddresses)
+void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addresses)
 {
     char logMenuChoice;
     int loggedInUsersId = (-1);
@@ -533,6 +539,9 @@ void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addres
         loggedInUsersId = login(users);
         if (loggedInUsersId != -1)
         {
+            addresses = readAddressesToVector(addresses, loggedInUsersId);
+            int numberOfAddresses = addresses.size();
+
             while (loggedInUsersId != -1)
             {
                 printMainMenu();
