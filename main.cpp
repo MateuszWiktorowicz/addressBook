@@ -40,7 +40,7 @@ void confirmAddedData();
 void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addresses, int numberOfAddresses);
 void registerNewUser(vector <Users> &users);
 bool isLoginFree(vector <Users> &users, string userLogin);
-bool login(vector <Users> &users);
+int login(vector <Users> &users);
 void saveRegisteredUserInFile(const Users &user);
 void pasteUserDataInFile(ofstream &file, const Users &user);
 void readUsersInVector(vector <Users> &users);
@@ -522,13 +522,18 @@ void confirmAddedData()
 void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addresses, int numberOfAddresses)
 {
     char logMenuChoice;
+    int loggedInUsersId = (-1);
     cin >> logMenuChoice;
 
     switch (logMenuChoice)
     {
     case '1' :
-        if (login(users))
+
+        loggedInUsersId = login(users);
+        if (loggedInUsersId != -1)
         {
+            cout << loggedInUsersId;
+            system("pause");
             while (true)
             {
                 printMainMenu();
@@ -592,9 +597,9 @@ bool isLoginFree(vector <Users> &users, string userLogin)
     return availableLogin;
 }
 
-bool login(vector <Users> &users)
+int login(vector <Users> &users)
 {
-    bool loginPassed = false;
+    int loggedInUserId = (-1);
     string login, password;
 
     cout << "Podaj login" << endl;
@@ -606,10 +611,10 @@ bool login(vector <Users> &users)
     {
         if ((user.login == login) && (user.password == password))
         {
-            loginPassed = true;
+            loggedInUserId = user.id;
         }
     }
-    return loginPassed;
+    return loggedInUserId;
 }
 
 void saveRegisteredUserInFile(const Users &user)
