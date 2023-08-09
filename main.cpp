@@ -16,10 +16,10 @@ struct Users
 };
 void printMainMenu();
 void printLogMenu();
-void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUserId);
+void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses, int& loggedInUsersId);
 void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUsersId);
 string readLine();
-void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, int addressBookIndex, int loggedInUserId);
+void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, int addressBookIndex, int loggedInUsersId);
 void printAllAdressesInBook(vector <AddressBook> &addresses, int numberOfAddresses);
 void printRequiredAddress(const AddressBook &address);
 void lookFor(vector <AddressBook> &addresses, int numOfAddresses);
@@ -70,7 +70,7 @@ void printMainMenu()
     cout << "3. Wyswietl wszystkie osoby w ksiazce adresowej" << endl;
     cout << "4. Edytuj osobe w ksiazce adresowej" << endl;
     cout << "5. Usun osobe" << endl;
-    cout << "9. Wyjdz" << endl;
+    cout << "9. Wyloguj" << endl;
 }
 
 void printLogMenu()
@@ -82,7 +82,7 @@ void printLogMenu()
     cout << "3. Zamknij Program" << endl;
 }
 
-void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUserId)
+void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses, int& loggedInUsersId)
 {
     char menuChar;
     cin >> menuChar;
@@ -91,7 +91,7 @@ void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddr
     {
     case '1' :
     {
-        addNewAddressDataIntoBook(addresses, numberOfAddresses, loggedInUserId);
+        addNewAddressDataIntoBook(addresses, numberOfAddresses, loggedInUsersId);
         numberOfAddresses++;
         break;
     }
@@ -120,16 +120,16 @@ void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddr
     }
     case '9' :
     {
-        exit(0);
+        loggedInUsersId = -1;
         break;
     }
     }
 }
 
-void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUserId)
+void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUsersId)
 {
     system("cls");
-    inputAddressIntoRequiredAddresBookIndex(addresses, numberOfAddresses, loggedInUserId);
+    inputAddressIntoRequiredAddresBookIndex(addresses, numberOfAddresses, loggedInUsersId);
     saveAddedAddressInFile(addresses, numberOfAddresses);
     confirmAddedData();
 }
@@ -533,7 +533,7 @@ void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addres
         loggedInUsersId = login(users);
         if (loggedInUsersId != -1)
         {
-            while (true)
+            while (loggedInUsersId != -1)
             {
                 printMainMenu();
                 selectOptionFromMainMenu(addresses, numberOfAddresses, loggedInUsersId);
@@ -598,7 +598,7 @@ bool isLoginFree(vector <Users> &users, string userLogin)
 
 int login(vector <Users> &users)
 {
-    int loggedInUserId = (-1);
+    int loggedInUsersId = (-1);
     string login, password;
 
     cout << "Podaj login" << endl;
@@ -610,10 +610,10 @@ int login(vector <Users> &users)
     {
         if ((user.login == login) && (user.password == password))
         {
-            loggedInUserId = user.id;
+            loggedInUsersId = user.id;
         }
     }
-    return loggedInUserId;
+    return loggedInUsersId;
 }
 
 void saveRegisteredUserInFile(const Users &user)
