@@ -6,7 +6,7 @@
 using namespace std;
 struct AddressBook
 {
-    int userId, loggedInUsersId;
+    int addressId, loggedInUsersId;
     string name, surname, fullAddress, phoneNumber, email;
 };
 struct Users
@@ -16,24 +16,23 @@ struct Users
 };
 void printMainMenu();
 void printLogMenu();
-void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses, int& loggedInUsersId);
-void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUsersId);
+void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& loggedInUsersId);
+void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int loggedInUsersId);
 string readLine();
-void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, int addressBookIndex, int loggedInUsersId);
-void printAllAdressesInBook(vector <AddressBook> &addresses, int numberOfAddresses);
+void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, int loggedInUsersId);
+void printAllAdressesInBook(vector <AddressBook> &addresses);
 void printRequiredAddress(const AddressBook &address);
-void lookFor(vector <AddressBook> &addresses, int numOfAddresses);
+void lookFor(vector <AddressBook> &addresses);
 char selectAddressSearchOption();
-void displaySearchedAddresses(vector <AddressBook> &addresses, int numOfAddresses, char addressSearchOption);
-void manageAddressEdit(vector <AddressBook> &addresses, int numOfAddresses);
-int selectAddressPositionToEdit(vector <AddressBook> &addresses, int numOfAddresses);
+void displaySearchedAddresses(vector <AddressBook> &addresses, char addressSearchOption);
+void manageAddressEdit(vector <AddressBook> &addresses);
+int selectAddressPositionToEdit(vector <AddressBook> &addresses);
 void printEditMenu();
 void executeAddressEdit(vector <AddressBook> &addresses, int addressArrayIndexToEdit);
-void saveAddedAddressInFile(vector <AddressBook> addresses, int addressIndex);
+void saveAddedAddressInFile(vector <AddressBook> addresses);
 vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses, int loggedInUsersId);
-void selectAddressToDelete(vector <AddressBook> &addresses, int &numberOfAddresses);
+void selectAddressToDelete(vector <AddressBook> &addresses);
 void deleteAddress(vector <AddressBook> &addresses, int indexToDelete);
-void clearCurrentAddressesInFile();
 void saveChangesInFileAfterEdit(vector <AddressBook> &addresses, int addressArrayIndexToEdit);
 bool isIndexExists(vector <AddressBook> &addresses, int index);
 void confirmAddedData();
@@ -81,7 +80,7 @@ void printLogMenu()
     cout << "3. Zamknij Program" << endl;
 }
 
-void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddresses, int& loggedInUsersId)
+void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& loggedInUsersId)
 {
     char menuChar;
     cin >> menuChar;
@@ -90,30 +89,29 @@ void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddr
     {
     case '1' :
     {
-        addNewAddressDataIntoBook(addresses, numberOfAddresses, loggedInUsersId);
-        numberOfAddresses++;
+        addNewAddressDataIntoBook(addresses, loggedInUsersId);
         break;
     }
     case '2' :
     {
-        lookFor(addresses, numberOfAddresses);
+        lookFor(addresses);
         break;
     }
     case '3' :
     {
         system("cls");
-        printAllAdressesInBook(addresses, numberOfAddresses);
+        printAllAdressesInBook(addresses);
         system("pause");
         break;
     }
     case '4' :
     {
-        manageAddressEdit(addresses, numberOfAddresses);
+        manageAddressEdit(addresses);
         break;
     }
     case '5' :
     {
-        selectAddressToDelete(addresses, numberOfAddresses);
+        selectAddressToDelete(addresses);
         break;
     }
     case '9' :
@@ -125,28 +123,22 @@ void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddr
     }
 }
 
-void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int& numberOfAddresses, int loggedInUsersId)
+void addNewAddressDataIntoBook(vector <AddressBook> &addresses, int loggedInUsersId)
 {
     system("cls");
-    inputAddressIntoRequiredAddresBookIndex(addresses, numberOfAddresses, loggedInUsersId);
-    saveAddedAddressInFile(addresses, numberOfAddresses);
+    inputAddressIntoRequiredAddresBookIndex(addresses, loggedInUsersId);
+    saveAddedAddressInFile(addresses);
     confirmAddedData();
 }
-void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, int addressBookIndex, int loggedInUsersId)
+void inputAddressIntoRequiredAddresBookIndex(vector <AddressBook> &addresses, int loggedInUsersId)
 {
 
     AddressBook address;
-    int lastIndex = addresses.size() - 1;
-    if (lastIndex < 0)
-    {
-        address.userId = 1;
-    }
-    else
-    {
-        address.userId = addresses[lastIndex].userId + 1;
 
-    }
+    address.addressId = addresses.empty() ? 1 : addresses.back().addressId + 1;
+
     address.loggedInUsersId = loggedInUsersId;
+
     cout << "Wprowadz imie" << endl;
     address.name = readLine();
     cout << "Wprowadz nazwisko" << endl;
@@ -169,9 +161,9 @@ string readLine()
     return input;
 }
 
-void printAllAdressesInBook(vector <AddressBook> &addresses, int numberOfAddresses)
+void printAllAdressesInBook(vector <AddressBook> &addresses)
 {
-    if (numberOfAddresses == 0)
+    if (addresses.empty())
     {
         cout << "Nie ma zadnych adresow w ksiazce adresowej" << endl;
     }
@@ -185,7 +177,7 @@ void printAllAdressesInBook(vector <AddressBook> &addresses, int numberOfAddress
 }
 void printRequiredAddress(const AddressBook &address)
 {
-    cout << "ID:              " << address.userId << endl;
+    cout << "ID:              " << address.addressId << endl;
     cout << "Imie:            " << address.name << endl;
     cout << "Nazwisko:        " << address.surname << endl;
     cout << "Adres:           " << address.fullAddress << endl;
@@ -194,13 +186,13 @@ void printRequiredAddress(const AddressBook &address)
     cout << endl;
 }
 
-void lookFor(vector <AddressBook> &addresses, int numOfAddresses)
+void lookFor(vector <AddressBook> &addresses)
 {
     system("cls");
-    if (numOfAddresses != 0)
+    if (!addresses.empty())
     {
         char addressSearchOption = selectAddressSearchOption();
-        displaySearchedAddresses(addresses, numOfAddresses, addressSearchOption);
+        displaySearchedAddresses(addresses, addressSearchOption);
     }
     else
     {
@@ -231,7 +223,7 @@ char selectAddressSearchOption()
     return addressSearchOption;
 }
 
-void displaySearchedAddresses(vector <AddressBook> &addresses, int numOfAddresses, char addressSearchOption)
+void displaySearchedAddresses(vector <AddressBook> &addresses, char addressSearchOption)
 {
     system("cls");
     string searchedData;
@@ -271,15 +263,15 @@ void displaySearchedAddresses(vector <AddressBook> &addresses, int numOfAddresse
     if (!addressIsFound) cout << "Nie odnaleziono adresu" << endl;
     system("pause");
 }
-void manageAddressEdit(vector <AddressBook> &addresses, int numOfAddresses)
+void manageAddressEdit(vector <AddressBook> &addresses)
 {
     system("cls");
 
 
-    if (numOfAddresses != 0)
+    if (!addresses.empty())
     {
         cout << "Wybierz ID adresu do edycji" << endl;
-        int addressArrayIndexToEdit = selectAddressPositionToEdit(addresses, numOfAddresses);
+        int addressArrayIndexToEdit = selectAddressPositionToEdit(addresses);
         executeAddressEdit(addresses, addressArrayIndexToEdit);
     }
     else
@@ -288,14 +280,14 @@ void manageAddressEdit(vector <AddressBook> &addresses, int numOfAddresses)
         Sleep(2000);
     }
 }
-int selectAddressPositionToEdit(vector <AddressBook> &addresses, int numOfAddresses)
+int selectAddressPositionToEdit(vector <AddressBook> &addresses)
 {
     system("cls");
     auto it = addresses.begin();
     int indexCounter = 0;
     cout << "Wybierz numer adresu do edycji" << endl;
     int addressPosition;
-    printAllAdressesInBook(addresses, numOfAddresses);
+    printAllAdressesInBook(addresses);
 
     while (true)
     {
@@ -304,7 +296,7 @@ int selectAddressPositionToEdit(vector <AddressBook> &addresses, int numOfAddres
         {
             while (it != addresses.end())
             {
-                if (it -> userId == addressPosition)
+                if (it -> addressId == addressPosition)
                 {
                     addressPosition = indexCounter;
                     return addressPosition;
@@ -383,13 +375,16 @@ void printEditMenu()
     cout << "6. Powrót do menu" << endl;
 }
 
-void saveAddedAddressInFile(vector <AddressBook> addresses, int addressIndex)
+void saveAddedAddressInFile(vector <AddressBook> addresses)
 {
-    fstream fileAddresses;
-    fileAddresses.open("addresses.txt", ios::out | ios::app);
+    int addressIndex = addresses.size() - 1;
+    ofstream fileAddresses("addresses.txt", ios::app);
 
-    fileAddresses << addresses[addressIndex].userId << "|" << addresses[addressIndex].loggedInUsersId << "|" << addresses[addressIndex].name << "|";
-    fileAddresses << addresses[addressIndex].surname << "|" << addresses[addressIndex].fullAddress << "|" << addresses[addressIndex].phoneNumber << "|" << addresses[addressIndex].email << endl;
+    fileAddresses << addresses[addressIndex].addressId << "|" << addresses[addressIndex].loggedInUsersId << "|" << addresses[addressIndex].name << "|";
+    fileAddresses << addresses[addressIndex].surname << "|" << addresses[addressIndex].fullAddress << "|";
+    fileAddresses << addresses[addressIndex].phoneNumber << "|" << addresses[addressIndex].email << endl;
+
+    fileAddresses.close();
 }
 
 vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses, int loggedInUsersId)
@@ -410,7 +405,7 @@ vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses, int 
         string field;
 
         getline(ss, field, '|');
-        address.userId = stoi(field);
+        address.addressId = stoi(field);
 
         getline(ss, field, '|');
         address.loggedInUsersId = stoi(field);
@@ -439,15 +434,15 @@ vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses, int 
     }
     return addresses;
 }
-void selectAddressToDelete(vector <AddressBook> &addresses, int &numberOfAddresses)
+void selectAddressToDelete(vector <AddressBook> &addresses)
 {
     system("cls");
     int indexToDelete;
     char deleteAnswer;
-    if (numberOfAddresses != 0)
+    if (!addresses.empty())
     {
         cout << "Wybierz indeks adresu do usuniecia" << endl;
-        printAllAdressesInBook(addresses, numberOfAddresses);
+        printAllAdressesInBook(addresses);
         cin >> indexToDelete;
         if (isIndexExists(addresses, indexToDelete))
         {
@@ -457,7 +452,6 @@ void selectAddressToDelete(vector <AddressBook> &addresses, int &numberOfAddress
             if (deleteAnswer == 't')
             {
                 deleteAddress(addresses, indexToDelete);
-                numberOfAddresses--;
             }
         }
         else
@@ -481,7 +475,7 @@ void deleteAddress(vector <AddressBook> &addresses, int indexToDelete)
 
     while (it != addresses.end())
     {
-        if (it -> userId == indexToDelete)
+        if (it -> addressId == indexToDelete)
         {
             saveChangesInFileAfterDelete(addresses, index);
             it = addresses.erase(it);
@@ -501,12 +495,11 @@ void saveChangesInFileAfterDelete(vector <AddressBook> &addresses, int indexToDe
 {
     vector <AddressBook> temporaryAddresses;
     AddressBook temporaryAddress;
-   // int realIndexToDelete = indexToDelete - 1;
 
     ifstream mainFile;
 
     mainFile.open("addresses.txt", ios::in);
-    fstream temporaryFile("temporaryAddresses.txt", ios::out | ios::app);
+    ofstream temporaryFile("temporaryAddresses.txt", ios::out | ios::app);
 
     string line;
 
@@ -516,7 +509,7 @@ void saveChangesInFileAfterDelete(vector <AddressBook> &addresses, int indexToDe
         string field;
 
         getline(ss, field, '|');
-        temporaryAddress.userId = stoi(field);
+        temporaryAddress.addressId = stoi(field);
 
         getline(ss, field, '|');
         temporaryAddress.loggedInUsersId = stoi(field);
@@ -536,10 +529,10 @@ void saveChangesInFileAfterDelete(vector <AddressBook> &addresses, int indexToDe
         getline(ss, field, '|');
         temporaryAddress.email = field;
 
-        if ((temporaryAddress.userId == addresses[indexToDelete].userId) && (temporaryAddress.loggedInUsersId == addresses[indexToDelete].loggedInUsersId))
+        if ((temporaryAddress.addressId == addresses[indexToDelete].addressId) && (temporaryAddress.loggedInUsersId == addresses[indexToDelete].loggedInUsersId))
         {
-            cout << temporaryAddress.userId << endl;
-            cout << addresses[indexToDelete].userId << endl;
+            cout << temporaryAddress.addressId << endl;
+            cout << addresses[indexToDelete].addressId << endl;
             cout << temporaryAddress.loggedInUsersId << endl;
             cout << addresses[indexToDelete].loggedInUsersId << endl;
             system("pause");
@@ -547,7 +540,7 @@ void saveChangesInFileAfterDelete(vector <AddressBook> &addresses, int indexToDe
         }
         else
         {
-            temporaryFile << temporaryAddress.userId << "|" << to_string(temporaryAddress.loggedInUsersId) << "|" << temporaryAddress.name << "|";
+            temporaryFile << temporaryAddress.addressId << "|" << to_string(temporaryAddress.loggedInUsersId) << "|" << temporaryAddress.name << "|";
             temporaryFile << temporaryAddress.surname << "|" << temporaryAddress.fullAddress << "|" << temporaryAddress.phoneNumber << "|" << temporaryAddress.email << endl;
         }
     }
@@ -568,7 +561,7 @@ void saveChangesInFileAfterEdit(vector <AddressBook> &addresses, int addressArra
     ifstream mainFile;
 
     mainFile.open("addresses.txt", ios::in);
-    fstream temporaryFile("temporaryAddresses.txt", ios::out | ios::app);
+    ofstream temporaryFile("temporaryAddresses.txt", ios::out | ios::app);
 
     string line;
 
@@ -578,7 +571,7 @@ void saveChangesInFileAfterEdit(vector <AddressBook> &addresses, int addressArra
         string field;
 
         getline(ss, field, '|');
-        temporaryAddress.userId = stoi(field);
+        temporaryAddress.addressId = stoi(field);
 
         getline(ss, field, '|');
         temporaryAddress.loggedInUsersId = stoi(field);
@@ -598,14 +591,14 @@ void saveChangesInFileAfterEdit(vector <AddressBook> &addresses, int addressArra
         getline(ss, field, '|');
         temporaryAddress.email = field;
 
-        if ((temporaryAddress.userId != addresses[addressArrayIndexToEdit].userId) || (temporaryAddress.loggedInUsersId != addresses[addressArrayIndexToEdit].loggedInUsersId))
+        if ((temporaryAddress.addressId != addresses[addressArrayIndexToEdit].addressId) || (temporaryAddress.loggedInUsersId != addresses[addressArrayIndexToEdit].loggedInUsersId))
         {
-            temporaryFile << temporaryAddress.userId << "|" << to_string(temporaryAddress.loggedInUsersId) << "|" << temporaryAddress.name << "|";
+            temporaryFile << temporaryAddress.addressId << "|" << to_string(temporaryAddress.loggedInUsersId) << "|" << temporaryAddress.name << "|";
             temporaryFile << temporaryAddress.surname << "|" << temporaryAddress.fullAddress << "|" << temporaryAddress.phoneNumber << "|" << temporaryAddress.email << endl;
         }
         else
         {
-            temporaryFile << addresses[addressArrayIndexToEdit].userId << "|" << addresses[addressArrayIndexToEdit].loggedInUsersId << "|" << addresses[addressArrayIndexToEdit].name << "|";
+            temporaryFile << addresses[addressArrayIndexToEdit].addressId << "|" << addresses[addressArrayIndexToEdit].loggedInUsersId << "|" << addresses[addressArrayIndexToEdit].name << "|";
             temporaryFile << addresses[addressArrayIndexToEdit].surname << "|" << addresses[addressArrayIndexToEdit].fullAddress << "|" << addresses[addressArrayIndexToEdit].phoneNumber << "|" << addresses[addressArrayIndexToEdit].email << endl;
         }
     }
@@ -618,19 +611,13 @@ void saveChangesInFileAfterEdit(vector <AddressBook> &addresses, int addressArra
 
 }
 
-void clearCurrentAddressesInFile()
-{
-    ofstream fileAddresses;
-    fileAddresses.open("addresses.txt", ios::trunc);
-    fileAddresses.close();
-}
 
 bool isIndexExists(vector <AddressBook> &addresses, int index)
 {
     bool indexExists = false;
     for (auto address : addresses)
     {
-        if (address.userId == index)
+        if (address.addressId == index)
         {
             indexExists = true;
         }
@@ -655,13 +642,13 @@ void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addres
         loggedInUsersId = login(users);
         if (loggedInUsersId != -1)
         {
-            addresses = readAddressesToVector(addresses, loggedInUsersId);
+            readAddressesToVector(addresses, loggedInUsersId);
             int numberOfAddresses = addresses.size();
 
             while (loggedInUsersId != -1)
             {
                 printMainMenu();
-                selectOptionFromMainMenu(addresses, numberOfAddresses, loggedInUsersId);
+                selectOptionFromMainMenu(addresses, loggedInUsersId);
             }
         }
         else
