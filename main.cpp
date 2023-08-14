@@ -531,10 +531,6 @@ void saveChangesInFileAfterDelete(vector <AddressBook> &addresses, int indexToDe
 
         if ((temporaryAddress.addressId == addresses[indexToDelete].addressId) && (temporaryAddress.loggedInUsersId == addresses[indexToDelete].loggedInUsersId))
         {
-            cout << temporaryAddress.addressId << endl;
-            cout << addresses[indexToDelete].addressId << endl;
-            cout << temporaryAddress.loggedInUsersId << endl;
-            cout << addresses[indexToDelete].loggedInUsersId << endl;
             system("pause");
             continue;
         }
@@ -640,6 +636,8 @@ void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addres
     case '1' :
         if (users.empty())
         {
+            cout << "Nie jeszcze zadnego uzytkownika" << endl;
+            Sleep(2000);
             break;
         }
         loggedInUsersId = login(users);
