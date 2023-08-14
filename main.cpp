@@ -636,7 +636,7 @@ void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addres
     case '1' :
         if (users.empty())
         {
-            cout << "Nie jeszcze zadnego uzytkownika" << endl;
+            cout << "Nie ma jeszcze zadnego uzytkownika" << endl;
             Sleep(2000);
             break;
         }
