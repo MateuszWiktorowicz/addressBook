@@ -34,7 +34,7 @@ vector <AddressBook> readAddressesToVector(vector <AddressBook> &addresses, int 
 void selectAddressToDelete(vector <AddressBook> &addresses, int &numberOfAddresses);
 void deleteAddress(vector <AddressBook> &addresses, int indexToDelete);
 void clearCurrentAddressesInFile();
-void saveChangesInFile(vector <AddressBook> &addresses, int numberOfAddresses);
+void saveChangesInFileAfterEdit(vector <AddressBook> &addresses, int addressArrayIndexToEdit);
 bool isIndexExists(vector <AddressBook> &addresses, int index);
 void confirmAddedData();
 void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addresses);
@@ -108,7 +108,6 @@ void selectOptionFromMainMenu(vector <AddressBook> &addresses, int& numberOfAddr
     case '4' :
     {
         manageAddressEdit(addresses, numberOfAddresses);
-        saveChangesInFile(addresses, numberOfAddresses);
         break;
     }
     case '5' :
@@ -365,6 +364,7 @@ void executeAddressEdit(vector <AddressBook> &addresses, int addressArrayIndexTo
         break;
     }
     }
+    saveChangesInFileAfterEdit(addresses, addressArrayIndexToEdit);
     confirmAddedData();
     Sleep(2000);
 }
@@ -457,7 +457,7 @@ void selectAddressToDelete(vector <AddressBook> &addresses, int &numberOfAddress
             {
                 deleteAddress(addresses, indexToDelete);
                 numberOfAddresses--;
-                saveChangesInFile(addresses, numberOfAddresses);
+                //saveChangesInFile(addresses, numberOfAddresses);
             }
         }
         else
@@ -492,13 +492,61 @@ void deleteAddress(vector <AddressBook> &addresses, int indexToDelete)
     }
 }
 
-void saveChangesInFile(vector <AddressBook> &addresses, int numberOfAddresses)
+void saveChangesInFileAfterEdit(vector <AddressBook> &addresses, int addressArrayIndexToEdit)
 {
-    clearCurrentAddressesInFile();
-    for (int i = 0; i < numberOfAddresses; i++)
+    vector <AddressBook> temporaryAddresses;
+    AddressBook temporaryAddress;
+
+    ifstream mainFile;
+
+    mainFile.open("addresses.txt", ios::in);
+    fstream temporaryFile("temporaryAddresses.txt", ios::out | ios::app);
+
+    string line;
+
+    while(getline(mainFile, line))
     {
-        saveAddedAddressInFile(addresses, i);
+        stringstream ss(line);
+        string field;
+
+        getline(ss, field, '|');
+        temporaryAddress.userId = stoi(field);
+
+        getline(ss, field, '|');
+        temporaryAddress.loggedInUsersId = stoi(field);
+
+        getline(ss, field, '|');
+        temporaryAddress.name = field;
+
+        getline(ss, field, '|');
+        temporaryAddress.surname = field;
+
+        getline(ss, field, '|');
+        temporaryAddress.fullAddress = field;
+
+        getline(ss, field, '|');
+        temporaryAddress.phoneNumber = field;
+
+        getline(ss, field, '|');
+        temporaryAddress.email = field;
+
+        if ((temporaryAddress.userId != addresses[addressArrayIndexToEdit].userId) || (temporaryAddress.loggedInUsersId != addresses[addressArrayIndexToEdit].loggedInUsersId))
+        {
+            temporaryFile << temporaryAddress.userId << "|" << to_string(temporaryAddress.loggedInUsersId) << "|" << temporaryAddress.name << "|";
+            temporaryFile << temporaryAddress.surname << "|" << temporaryAddress.fullAddress << "|" << temporaryAddress.phoneNumber << "|" << temporaryAddress.email << endl;
+        }
+        else
+        {
+            temporaryFile << addresses[addressArrayIndexToEdit].userId << "|" << addresses[addressArrayIndexToEdit].loggedInUsersId << "|" << addresses[addressArrayIndexToEdit].name << "|";
+            temporaryFile << addresses[addressArrayIndexToEdit].surname << "|" << addresses[addressArrayIndexToEdit].fullAddress << "|" << addresses[addressArrayIndexToEdit].phoneNumber << "|" << addresses[addressArrayIndexToEdit].email << endl;
+        }
     }
+
+        mainFile.close();
+        temporaryFile.close();
+
+        remove("addresses.txt");
+        rename("temporaryAddresses.txt", "addresses.txt");
 
 }
 
