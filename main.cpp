@@ -638,7 +638,10 @@ void selectOptionFromLogMenu(vector <Users> &users, vector <AddressBook> &addres
     switch (logMenuChoice)
     {
     case '1' :
-
+        if (users.empty())
+        {
+            break;
+        }
         loggedInUsersId = login(users);
         if (loggedInUsersId != -1)
         {
