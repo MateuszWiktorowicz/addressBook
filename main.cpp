@@ -44,6 +44,7 @@ int login(vector <Users> &users);
 void saveRegisteredUserInFile(const Users &user);
 void pasteUserDataInFile(ofstream &file, const Users &user);
 void readUsersInVector(vector <Users> &users);
+void saveChangesInFileAfterDelete(vector <AddressBook> &addresses, int indexToDelete);
 
 int main()
 {
@@ -457,7 +458,6 @@ void selectAddressToDelete(vector <AddressBook> &addresses, int &numberOfAddress
             {
                 deleteAddress(addresses, indexToDelete);
                 numberOfAddresses--;
-                //saveChangesInFile(addresses, numberOfAddresses);
             }
         }
         else
@@ -476,20 +476,88 @@ void selectAddressToDelete(vector <AddressBook> &addresses, int &numberOfAddress
 
 void deleteAddress(vector <AddressBook> &addresses, int indexToDelete)
 {
+    int index = 0;
     auto it = addresses.begin();
 
     while (it != addresses.end())
     {
         if (it -> userId == indexToDelete)
         {
+            saveChangesInFileAfterDelete(addresses, index);
             it = addresses.erase(it);
+
             return;
         }
         else
         {
             it++;
+            index++;
+        }
+
+    }
+}
+
+void saveChangesInFileAfterDelete(vector <AddressBook> &addresses, int indexToDelete)
+{
+    vector <AddressBook> temporaryAddresses;
+    AddressBook temporaryAddress;
+   // int realIndexToDelete = indexToDelete - 1;
+
+    ifstream mainFile;
+
+    mainFile.open("addresses.txt", ios::in);
+    fstream temporaryFile("temporaryAddresses.txt", ios::out | ios::app);
+
+    string line;
+
+    while(getline(mainFile, line))
+    {
+        stringstream ss(line);
+        string field;
+
+        getline(ss, field, '|');
+        temporaryAddress.userId = stoi(field);
+
+        getline(ss, field, '|');
+        temporaryAddress.loggedInUsersId = stoi(field);
+
+        getline(ss, field, '|');
+        temporaryAddress.name = field;
+
+        getline(ss, field, '|');
+        temporaryAddress.surname = field;
+
+        getline(ss, field, '|');
+        temporaryAddress.fullAddress = field;
+
+        getline(ss, field, '|');
+        temporaryAddress.phoneNumber = field;
+
+        getline(ss, field, '|');
+        temporaryAddress.email = field;
+
+        if ((temporaryAddress.userId == addresses[indexToDelete].userId) && (temporaryAddress.loggedInUsersId == addresses[indexToDelete].loggedInUsersId))
+        {
+            cout << temporaryAddress.userId << endl;
+            cout << addresses[indexToDelete].userId << endl;
+            cout << temporaryAddress.loggedInUsersId << endl;
+            cout << addresses[indexToDelete].loggedInUsersId << endl;
+            system("pause");
+            continue;
+        }
+        else
+        {
+            temporaryFile << temporaryAddress.userId << "|" << to_string(temporaryAddress.loggedInUsersId) << "|" << temporaryAddress.name << "|";
+            temporaryFile << temporaryAddress.surname << "|" << temporaryAddress.fullAddress << "|" << temporaryAddress.phoneNumber << "|" << temporaryAddress.email << endl;
         }
     }
+
+        mainFile.close();
+        temporaryFile.close();
+
+        remove("addresses.txt");
+        rename("temporaryAddresses.txt", "addresses.txt");
+
 }
 
 void saveChangesInFileAfterEdit(vector <AddressBook> &addresses, int addressArrayIndexToEdit)
